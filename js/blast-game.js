@@ -1,13 +1,13 @@
+var game;
 window.onload = function() {
     const config = {
         type: Phaser.AUTO,
         parent: 'phaser-game',
         width: 800,
-        heigth: 566,
+        height: 600,
         backgroundColor: '#eee',
         scene: [SceneMain]
     };
 
-    var game = new Phaser.Game(config);
-    
+    game = new Phaser.Game(config);
 };
