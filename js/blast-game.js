@@ -1,3 +1,5 @@
+// import {Preloader} from "./preload";
+
 var game;
 window.onload = function() {
     const config = {
@@ -6,7 +8,10 @@ window.onload = function() {
         width: 800,
         height: 600,
         backgroundColor: '#eee',
-        scene: [SceneMain]
+        scene: [
+            Preloader,
+            SceneMain
+        ]
     };
 
     game = new Phaser.Game(config);
