@@ -22,10 +22,10 @@ class SceneMain extends Phaser.Scene {
     }
 
     create() {
-        var gameField, gameInformation, gameProgress, gamePause, gameButton_little, gameButton;
-        var gameFieldRows = 8,
+        let gameField, gameInformation, gameProgress, gamePause, gameButton_little, gameButton;
+        let gameFieldRows = 8,
             gameFieldCols = 7;
-        var block_red, block_blue;
+        let gamePoints;
 
         gameField = this.add.sprite(0, 0, 'field');
         gameInformation = this.add.sprite(0, 0, 'information');
@@ -61,6 +61,17 @@ class SceneMain extends Phaser.Scene {
         gameButton.displayHeight = this.aGrid.ch * 1.5;
         this.aGrid.placeAtIndex(172, gameButton);
 
+        let textSize = this.aGrid.ch / 2;
+        let score = 0;
+
+        gamePoints = this.add.text(0, 0, '' + score + '', {
+            fontSize: '' + textSize + 'px',
+            fontFamily: 'Aria',
+            align: 'center',
+        }).setOrigin(0.5);
+
+        this.aGrid.placeAtIndexCenteY(108, gamePoints);
+        console.log(gamePoints._text);
 
         this.fieldGrid = new AlignGrid({
             scene: this,
@@ -71,16 +82,16 @@ class SceneMain extends Phaser.Scene {
             startX: this.aGrid.cw * 1,
             startY: this.aGrid.ch * 3
         });
-        this.fieldGrid.showСoordinate();
+        // this.fieldGrid.showСoordinate();
 
-        // var count = this.fieldGrid.config.rows * this.fieldGrid.config.cols - 1;
-        var count = 0;
+        // let count = this.fieldGrid.config.rows * this.fieldGrid.config.cols - 1;
+        let count = 0;
 
         this.blockField = [];
-        for (var i = 0; i < this.fieldGrid.config.rows; i++) {
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
             this.blockField[i] = [];
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
-                var color = Phaser.Math.Between(0, 4);
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
+                let color = Phaser.Math.Between(0, 4);
                 this.blockField[i][j] = this.add.image(0, 0, this.frames[color]).setInteractive();
                 this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
                 this.blockField[i][j].displayHeight = this.fieldGrid.ch * 1.1;
@@ -106,25 +117,25 @@ class SceneMain extends Phaser.Scene {
     clickBlock(pointer) {
         // console.log(this.game.getFrame(), 'pd', pointer.x, pointer.y);
 
-        var row = Math.floor((pointer.y - this.fieldGrid.config.startY) / this.fieldGrid.ch),
+        let row = Math.floor((pointer.y - this.fieldGrid.config.startY) / this.fieldGrid.ch),
             col = Math.floor((pointer.x - this.fieldGrid.config.startX) / this.fieldGrid.cw);
 
         // console.log("New", this.newBlockField);
         // console.log("Нажата: ", row, col);
 
         if (row >= 0 && row < this.fieldGrid.config.rows && col >= 0 && col < this.fieldGrid.config.cols) {
-            var color = this.blockField[row][col].texture.key;
+            let color = this.blockField[row][col].texture.key;
 
             this.searchBlock(row, col, color);
-            var nameBlock = "sameBlock";
-            var nameBlock2 = "freeBlock";
-            var count = 0;
+            let nameBlock = "sameBlock";
+            let nameBlock2 = "freeBlock";
+            let count = 0;
             let tt = this.checkСountBlocks(nameBlock, count);
             if (tt > 1) {
                 this.blockField = this.newBlockField;
                 this.deleteBlocks(nameBlock);
-                //this.blockField[row][col].destroy();
                 this.fallBlocks(nameBlock, nameBlock2, count);
+                this.countPoints(tt);
             } else {
             }
             // console.log("Кол-во ", tt);
@@ -133,14 +144,14 @@ class SceneMain extends Phaser.Scene {
 
             // this.blockField[row][col].destroy();
         }
-        this.add.rectangle(pointer.x, pointer.y, 8, 8, 0xff00ff);
+        // this.add.rectangle(pointer.x, pointer.y, 8, 8, 0xff00ff);
         this.countComboBlocks();
         console.log(this.blockField);
     }
 
     searchBlock(row, col, color) {
-        var nameBlock = "sameBlock";
-        var nameBlock2 = "freeBlock";
+        let nameBlock = "sameBlock";
+        let nameBlock2 = "freeBlock";
 
         if (row >= 0 && row < this.fieldGrid.config.rows && col >= 0 && col < this.fieldGrid.config.cols) {
             if (this.newBlockField[row][col].name == nameBlock2) {
@@ -161,8 +172,8 @@ class SceneMain extends Phaser.Scene {
 
     searchBlock2(row, col, color) {
         // console.log("Передал: ", row, col, color);
-        var nameBlock = "sameBlock";
-        var nameBlock2 = "freeBlock";
+        let nameBlock = "sameBlock";
+        let nameBlock2 = "freeBlock";
 
         if (this.blockField[row][col].name == nameBlock2) {
             this.blockField[row][col].name = nameBlock;
@@ -199,14 +210,14 @@ class SceneMain extends Phaser.Scene {
         }
     }
 
-    countComboBlocks(){
+    countComboBlocks() {
         let arrayBlocksField = [];
-        var nameBlock = "sameBlock";
-        var nameBlock2 = "freeBlock";
+        let nameBlock = "sameBlock";
+        let nameBlock2 = "freeBlock";
 
-        for (var i = 0; i < this.fieldGrid.config.rows; i++) {
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
-                var newColor = this.newBlockField[i][j].texture.key;
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
+                let newColor = this.newBlockField[i][j].texture.key;
                 this.searchBlock(i, j, newColor);
 
                 let tt = this.comboBlocks(nameBlock, 0);
@@ -222,8 +233,8 @@ class SceneMain extends Phaser.Scene {
     }
 
     comboBlocks(nameBlock, count) {
-        for (var i = 0; i < this.fieldGrid.config.rows; i++) {
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 if (this.newBlockField[i][j].name == nameBlock) {
                     this.newBlockField[i][j].name = null;
                     count++;
@@ -234,8 +245,8 @@ class SceneMain extends Phaser.Scene {
     }
 
     checkСountBlocks(nameBlock, count) {
-        for (var i = 0; i < this.fieldGrid.config.rows; i++) {
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 if (this.newBlockField[i][j].name == nameBlock) {
                     count++;
                 }
@@ -246,8 +257,8 @@ class SceneMain extends Phaser.Scene {
 
 
     deleteBlocks(nameBlock) {
-        for (var i = 0; i < this.fieldGrid.config.rows; i++) {
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 if (this.blockField[i][j].name == nameBlock) {
                     this.blockField[i][j].destroy();
                 }
@@ -256,8 +267,8 @@ class SceneMain extends Phaser.Scene {
     }
 
     returnBlocks(nameBlock2) {
-        for (var i = 0; i < this.fieldGrid.config.rows; i++) {
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 this.blockField[i][j].name = nameBlock2;
             }
         }
@@ -268,8 +279,8 @@ class SceneMain extends Phaser.Scene {
 
         while (bool == false) {
             bool = true;
-            for (var j = 0; j < this.fieldGrid.config.cols; j++) {
-                var color = Phaser.Math.Between(0, 4);
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
+                let color = Phaser.Math.Between(0, 4);
                 if (this.blockField[0][j].name == nameBlock) {
                     this.blockField[0][j] = this.add.image(0, j, this.frames[color]).setInteractive();
                     this.blockField[0][j].displayWidth = this.fieldGrid.cw * 1;
@@ -278,8 +289,8 @@ class SceneMain extends Phaser.Scene {
                     this.blockField[0][j].name = nameBlock2;
                 }
             }
-            for (var i = 1; i < this.fieldGrid.config.rows; i++) {
-                for (var j = 0; j < this.fieldGrid.config.cols; j++) {
+            for (let i = 1; i < this.fieldGrid.config.rows; i++) {
+                for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                     if (this.blockField[i][j].name == nameBlock) {
                         this.blockField[i][j] = this.add.image(0, j, this.newBlockField[i - 1][j].texture.key).setInteractive();
                         this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
@@ -300,4 +311,11 @@ class SceneMain extends Phaser.Scene {
             }
         }
     }
+
+    countPoints(score, points) {
+        score = score + points * points * 10;
+        // this.gamePoints._text;
+        console.log("====>", score);
+    }
+
 }
