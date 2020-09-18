@@ -1,49 +1,37 @@
 // import {addGameField} from "/blast-gameField";
 
 class SceneMain extends Phaser.Scene {
-// export default class SceneMain extends Phaser.Scene {
     constructor() {
         super('SceneMain');
+        this.score = 0;
+        this.scoreWin = 600;
+        this.moves = 50;
     }
 
     preload() {
-        // this.load.image('field', '/assets/images/field.png');
-        // this.load.image('information', '/assets/images/information.png');
-        // this.load.image('progress', '/assets/images/progress.png');
-        // this.load.image('pause', '/assets/images/pause.png');
-        // this.load.image('button_little', '/assets/images/buttom-little.png');
-        // this.load.image('button', '/assets/images/buttom.png');
-        //
-        // this.load.image('block_red', '/assets/images/block-red.png');
-        // this.load.image('block_blue', '/assets/images/block-blue.png');
-        // this.load.image('block_yellow', '/assets/images/block-yellow.png');
-        // this.load.image('block_purple', '/assets/images/block-purple.png');
-        // this.load.image('block_green', '/assets/images/block-green.png');
-    }
-
-    create() {
-        let gameField, gameInformation, gameProgress, gamePause, gameButton_little, gameButton;
+        let gameInformation, gameProgress, gamePause, gameButton_little, gameButton;
         let gameFieldRows = 8,
             gameFieldCols = 7;
-        let gamePoints;
+        let progressBar,
+            progressBox;
 
-        gameField = this.add.sprite(0, 0, 'field');
+        this.gameField = this.add.sprite(0, 0, 'field');
         gameInformation = this.add.sprite(0, 0, 'information');
         gameProgress = this.add.sprite(0, 0, 'progress');
-        gamePause = this.add.sprite(0, 0, 'pause');
-        gameButton = this.add.sprite(0, 0, 'button');
-
+        this.gamePause = this.add.sprite(0, 0, 'pause');
+        // gameButton = this.add.sprite(0, 0, 'button');
+        progressBox = this.add.sprite(0, 0, 'progressBox');
+        // progressBar = this.add.sprite(0, 0, 'progressBar');
 
         this.frames = ['block_red', 'block_blue', 'block_yellow', 'block_purple', 'block_green'];
-
 
         this.aGrid = new AlignGrid({scene: this, rows: 12, cols: 16});
         // this.aGrid.showNumbers();
 
-        gameField.displayWidth = this.aGrid.cw * gameFieldCols + 25;
-        gameField.displayHeight = this.aGrid.ch * gameFieldRows + 25;
-        this.aGrid.placeAtIndexCenteY(100, gameField);
-        gameField.setDepth(-100);
+        this.gameField.displayWidth = this.aGrid.cw * gameFieldCols + 25;
+        this.gameField.displayHeight = this.aGrid.ch * gameFieldRows + 25;
+        this.aGrid.placeAtIndexCenteY(100, this.gameField);
+        this.gameField.setDepth(-100);
 
         gameInformation.displayWidth = this.aGrid.cw * 5;
         gameInformation.displayHeight = this.aGrid.ch * 5.01;
@@ -53,38 +41,62 @@ class SceneMain extends Phaser.Scene {
         gameProgress.displayHeight = this.aGrid.ch * 2;
         this.aGrid.placeAtIndex(7, gameProgress);
 
-        gamePause.displayWidth = this.aGrid.cw + 25;
-        gamePause.displayHeight = this.aGrid.ch + 25;
-        this.aGrid.placeAtIndexCenteY(14, gamePause);
+        this.gamePause.displayWidth = this.aGrid.cw + 25;
+        this.gamePause.displayHeight = this.aGrid.ch + 25;
+        this.aGrid.placeAtIndexCenteY(14, this.gamePause);
 
-        gameButton.displayWidth = this.aGrid.cw * 5;
-        gameButton.displayHeight = this.aGrid.ch * 1.5;
-        this.aGrid.placeAtIndex(172, gameButton);
+        // gameButton.displayWidth = this.aGrid.cw * 5;
+        // gameButton.displayHeight = this.aGrid.ch * 1.5;
+        // this.aGrid.placeAtIndex(172, gameButton);
 
-        let textSize = this.aGrid.ch / 2;
-        let score = 0;
+        let textSizePoints = this.aGrid.ch / 2;
+        let textSizeMoves = this.aGrid.ch;
 
-        gamePoints = this.add.text(0, 0, '' + score + '', {
-            fontSize: '' + textSize + 'px',
+        this.gamePoints = this.add.text(0, 0, '' + this.score + '', {
+            fontSize: '' + textSizePoints + 'px',
             fontFamily: 'Aria',
             align: 'center',
         }).setOrigin(0.5);
+        this.aGrid.placeAtIndexCenteY(108, this.gamePoints);
 
-        this.aGrid.placeAtIndexCenteY(108, gamePoints);
-        console.log(gamePoints._text);
+        this.gameMoves = this.add.text(0, 0, '' + this.moves + '', {
+            fontSize: '' + textSizeMoves + 'px',
+            fontFamily: 'Aria',
+            align: 'center',
+        }).setOrigin(0.5);
+        this.aGrid.placeAtIndexCenteY(76, this.gameMoves);
 
+        progressBox.displayWidth = this.aGrid.cw * 5;
+        progressBox.displayHeight = this.aGrid.ch / 2;
+        this.aGrid.placeAtIndexCenteY(7, progressBox);
+        progressBox.setDepth(5);
+
+        let sizeText = this.aGrid.ch / 3;
+        this.gameCombo = this.add.text(0, 0, '', {
+            fontSize: '' + sizeText + 'px',
+            fontFamily: 'Aria',
+            color: '#20539a',
+            align: 'center',
+        }).setOrigin(0.5);
+        this.aGrid.placeAtIndex(1, this.gameCombo);
+
+        this.progressBar3 = this.add.graphics();
+        // console.log(this.gameField);
+
+    }
+
+    create() {
         this.fieldGrid = new AlignGrid({
             scene: this,
-            rows: gameFieldRows,
-            cols: gameFieldCols,
-            width: gameField.displayWidth - 25,
-            height: gameField.displayHeight - 25,
+            rows: 8,
+            cols: 7,
+            width: this.gameField.displayWidth - 25,
+            height: this.gameField.displayHeight - 25,
             startX: this.aGrid.cw * 1,
             startY: this.aGrid.ch * 3
         });
-        // this.fieldGrid.showСoordinate();
+        //this.fieldGrid.showСoordinate();
 
-        // let count = this.fieldGrid.config.rows * this.fieldGrid.config.cols - 1;
         let count = 0;
 
         this.blockField = [];
@@ -92,7 +104,7 @@ class SceneMain extends Phaser.Scene {
             this.blockField[i] = [];
             for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 let color = Phaser.Math.Between(0, 4);
-                this.blockField[i][j] = this.add.image(0, 0, this.frames[color]).setInteractive();
+                this.blockField[i][j] = this.add.sprite(0, 0, this.frames[color]).setInteractive();
                 this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
                 this.blockField[i][j].displayHeight = this.fieldGrid.ch * 1.1;
                 this.blockField[i][j].name = "freeBlock";
@@ -106,9 +118,15 @@ class SceneMain extends Phaser.Scene {
 
         this.countComboBlocks();
 
-        // console.log(this.blockField[0][0].texture.key);
         console.log(this.blockField)
+        this.lock = false;
         this.input.on("pointerdown", this.clickBlock, this);
+        this.gamePause.setInteractive();
+        // this.input.on("pointerdown", this.clickBlock, this);
+        // this.onObjectClicked(pointer,gameObject)
+        // {
+        //     console.log("Ok");
+        // }
     }
 
     update() {
@@ -120,33 +138,39 @@ class SceneMain extends Phaser.Scene {
         let row = Math.floor((pointer.y - this.fieldGrid.config.startY) / this.fieldGrid.ch),
             col = Math.floor((pointer.x - this.fieldGrid.config.startX) / this.fieldGrid.cw);
 
-        // console.log("New", this.newBlockField);
-        // console.log("Нажата: ", row, col);
-
-        if (row >= 0 && row < this.fieldGrid.config.rows && col >= 0 && col < this.fieldGrid.config.cols) {
+        if (row >= 0 && row < this.fieldGrid.config.rows && col >= 0 && col < this.fieldGrid.config.cols && this.lock == false) {
             let color = this.blockField[row][col].texture.key;
 
             this.searchBlock(row, col, color);
+
             let nameBlock = "sameBlock";
             let nameBlock2 = "freeBlock";
             let count = 0;
             let tt = this.checkСountBlocks(nameBlock, count);
+
             if (tt > 1) {
                 this.blockField = this.newBlockField;
                 this.deleteBlocks(nameBlock);
-                this.fallBlocks(nameBlock, nameBlock2, count);
+                this.fallBlocks(nameBlock, nameBlock2);
                 this.countPoints(tt);
+                this.countMoves();
+                this.countProgress();
             } else {
+                this.animationErrorBlocks(this.blockField[row][col]);
+                this.returnBlocks(nameBlock2)
             }
-            // console.log("Кол-во ", tt);
-            this.returnBlocks(nameBlock2);
 
-
-            // this.blockField[row][col].destroy();
+            if (this.moves == 0) {
+                let textGame = false;
+                this.endGame(textGame);
+            }
+            if (this.score >= this.scoreWin) {
+                let textGame = true;
+                this.endGame(textGame);
+            }
         }
-        // this.add.rectangle(pointer.x, pointer.y, 8, 8, 0xff00ff);
-        this.countComboBlocks();
         console.log(this.blockField);
+        // console.log(this.lock);
     }
 
     searchBlock(row, col, color) {
@@ -227,7 +251,9 @@ class SceneMain extends Phaser.Scene {
             }
         }
         this.returnBlocks(nameBlock2);
-        console.log("Всего совпадений: ", arrayBlocksField.length);
+        this.gameCombo.setText('Всего совпадений: \n' + arrayBlocksField.length + '');
+
+        // console.log("Всего совпадений: ", arrayBlocksField.length);
 
         return arrayBlocksField.length;
     }
@@ -255,12 +281,11 @@ class SceneMain extends Phaser.Scene {
         return count;
     }
 
-
     deleteBlocks(nameBlock) {
         for (let i = 0; i < this.fieldGrid.config.rows; i++) {
             for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 if (this.blockField[i][j].name == nameBlock) {
-                    this.blockField[i][j].destroy();
+                    this.animationDeleteBlocks(this.blockField[i][j]);
                 }
             }
         }
@@ -274,48 +299,231 @@ class SceneMain extends Phaser.Scene {
         }
     }
 
-    fallBlocks(nameBlock, nameBlock2, count) {
+    fallBlocks(nameBlock, nameBlock2) {
         let bool = false;
+        this.lock = true;
+        this.destroyed = 0;
+        this.newBlockField = this.blockField;
 
-        while (bool == false) {
-            bool = true;
+        let count = this.checkСountBlocks(nameBlock, 0);
+        if (count == 0) {
+            this.lock = false;
+            this.countComboBlocks();
+        }
+        // for (let j = 0; j < this.fieldGrid.config.cols; j++) {
+        //     let color = Phaser.Math.Between(0, 4);
+        //     if (this.blockField[0][j].name == nameBlock) {
+        //         // this.blockField[0][j].destroy();
+        //         this.blockField[0][j] = this.add.sprite(0, j, this.frames[color]).setInteractive();
+        //         this.blockField[0][j].displayWidth = this.fieldGrid.cw * 1;
+        //         this.blockField[0][j].displayHeight = this.fieldGrid.ch * 1.1;
+        //         this.fieldGrid.placeAt(j, 0, this.blockField[0][j]);
+        //         this.blockField[0][j].name = nameBlock2;
+        //         this.animationFallBlocks2(this.blockField[0][j]);
+        //     }
+        // }
+        // for (let i = 1; i < this.fieldGrid.config.rows; i++) {
+        //     for (let j = 0; j < this.fieldGrid.config.cols; j++) {
+        //         if (this.blockField[i][j].name == nameBlock) {
+        //             // this.bool2 = true;
+        //             destroyed++;
+        //             this.blockField[i][j] = this.add.sprite(0, j, this.blockField[i - 1][j].texture.key).setInteractive();
+        //             this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
+        //             this.blockField[i][j].displayHeight = this.fieldGrid.ch * 1.1;
+        //             this.blockField[i - 1][j].name = nameBlock;
+        //             this.animationFallBlocks(this.blockField[i - 1][j], this.blockField[i][j], nameBlock, destroyed);
+        //             // this.blockField[i - 1][j].destroy();
+        //             this.fieldGrid.placeAt(j, i, this.blockField[i][j]);
+        //             this.blockField[i][j].name = nameBlock2;
+        //
+        //         }
+        //     }
+        // }
+
+
+
+        /*Учебный полигон вторая эпоха*/
+        // if (this.destroyed <= 0) {
+        for (let i = this.fieldGrid.config.rows - 1; i >= 0; i--) {
+            // if (this.destroyed <= 0) {
             for (let j = 0; j < this.fieldGrid.config.cols; j++) {
-                let color = Phaser.Math.Between(0, 4);
-                if (this.blockField[0][j].name == nameBlock) {
-                    this.blockField[0][j] = this.add.image(0, j, this.frames[color]).setInteractive();
-                    this.blockField[0][j].displayWidth = this.fieldGrid.cw * 1;
-                    this.blockField[0][j].displayHeight = this.fieldGrid.ch * 1.1;
-                    this.fieldGrid.placeAt(j, 0, this.blockField[0][j]);
-                    this.blockField[0][j].name = nameBlock2;
-                }
-            }
-            for (let i = 1; i < this.fieldGrid.config.rows; i++) {
-                for (let j = 0; j < this.fieldGrid.config.cols; j++) {
-                    if (this.blockField[i][j].name == nameBlock) {
-                        this.blockField[i][j] = this.add.image(0, j, this.newBlockField[i - 1][j].texture.key).setInteractive();
+                if (this.blockField[i][j].name == nameBlock) {
+                    this.destroyed++;
+                    if (i == 0) {
+                        let color = Phaser.Math.Between(0, 4);
+                        this.blockField[i][j] = this.add.sprite(0, 0, this.frames[color]);
+                        this.blockField[i][j].y = this.blockField[i][j].y - this.fieldGrid.ch;
                         this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
                         this.blockField[i][j].displayHeight = this.fieldGrid.ch * 1.1;
-                        this.blockField[i - 1][j].name = nameBlock;
-                        this.blockField[i - 1][j].destroy();
                         this.fieldGrid.placeAt(j, i, this.blockField[i][j]);
+                        this.animationFallBlocks2(this.blockField[i][j]);
                         this.blockField[i][j].name = nameBlock2;
-
+                    } else {
+                        this.blockField[i][j] = this.add.sprite(0, 0, this.blockField[i - 1][j].texture.key);
+                        this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
+                        this.blockField[i][j].displayHeight = this.fieldGrid.ch * 1.1;
+                        this.fieldGrid.placeAt(j, i, this.blockField[i][j]);
+                        this.animationFallBlocks2(this.blockField[i - 1][j], this.blockField[i][j]);
+                        if (this.blockField[i - 1][j].name == nameBlock2) {
+                            this.blockField[i][j].name = nameBlock2;
+                        } else {
+                            this.blockField[i][j].name = nameBlock;
+                        }
                     }
                 }
             }
+        }
+        // }
+    }
 
-            count = this.checkСountBlocks(nameBlock, 0);
-            // console.log("====>",count);
-            if (count != 0) {
-                bool = false;
+    returnAlpha() {
+        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
+            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
+                this.blockField[i][j].alpha = 1;
             }
         }
     }
 
-    countPoints(score, points) {
-        score = score + points * points * 10;
-        // this.gamePoints._text;
-        console.log("====>", score);
+    animationFallBlocks2(oldBlock, nextBlock) {
+        let nameBlock = "sameBlock";
+        let nameBlock2 = "freeBlock";
+
+        if (!nextBlock) {
+            let nextBlock;
+            oldBlock.y = oldBlock.y - this.fieldGrid.ch;
+        } else if (oldBlock.name == nameBlock2) {
+            oldBlock.alpha = 1;
+            nextBlock.alpha = 0;
+        } else {
+            nextBlock.alpha = 0;
+        }
+
+        this.tweens.add({
+            targets: oldBlock,
+            y: '+=' + this.fieldGrid.ch + '',
+            duration: 150,
+            // delay: 10,
+            callbackScope: this,
+            onComplete: function () {
+                if (!nextBlock) {
+                    oldBlock.alpha = 1;
+                } else if (oldBlock.name == nameBlock2) {
+                    oldBlock.name = nameBlock;
+                    nextBlock.name = nameBlock2;
+                    nextBlock.alpha = 1;
+                    oldBlock.destroy();
+                } else {
+                }
+                this.destroyed--;
+                if (this.destroyed == 0) {
+                    this.fallBlocks(nameBlock, nameBlock2);
+                }
+            }
+        });
+
+    }
+
+    animationDeleteBlocks(block) {
+        let scaleBlock = block.scale;
+
+        this.tweens.add({
+            targets: block,
+            alpha: 0,
+            scale: scaleBlock / 2,
+            duration: 200,
+            completeDelay: 0,
+            onComplete: function () {
+                // this.blockField = this.newBlockField;
+            },
+        });
+    }
+
+    animationErrorBlocks(block) {
+        let scaleBlock = block.scale;
+
+        this.tweens.add({
+            targets: block,
+            scale: scaleBlock / 1.1,
+            duration: 100,
+            callbackScope: this,
+            onComplete: function () {
+                block.scale = scaleBlock;
+            }
+        });
+    }
+
+    countPoints(points) {
+        this.score += points * points;
+        this.gamePoints.setText(this.score);
+    }
+
+    countMoves() {
+        this.moves--;
+        this.gameMoves.setText(this.moves);
+    }
+
+    countProgress() {
+        let progressPercent = Math.floor(this.score * 100 / this.scoreWin);
+        let progressBarX = this.aGrid.cw * 5 + this.aGrid.cw / 8,
+            progressBarY = this.aGrid.ch / 1.25,
+            progressBarMaxX = Math.floor((this.aGrid.cw * 4.8) * (progressPercent / 100)),
+            progressBarMaxY = this.aGrid.ch / 2.65,
+            progressBarRadios = this.aGrid.cw / 6;
+
+        if (progressBarMaxX >= this.aGrid.cw * 4.8) {
+            progressBarMaxX = this.aGrid.cw * 4.8;
+        }
+        if (progressPercent < 8) {
+            progressBarY = this.aGrid.ch / 1.2,
+                progressBarMaxY = this.aGrid.ch / 3,
+                progressBarRadios = progressPercent;
+        }
+
+        this.progressBar3.clear();
+        this.progressBar3.fillStyle(0x19ff19, 1);
+        this.progressBar3.fillRoundedRect(progressBarX, progressBarY, progressBarMaxX, progressBarMaxY, progressBarRadios);
+        this.progressBar3.setDepth(10);
+    }
+
+    endGame(textGame) {
+        let gamePole = this.add.sprite(0, 0, 'button');
+
+        gamePole.displayWidth = this.aGrid.cw * 9;
+        gamePole.displayHeight = this.aGrid.ch * 5;
+        this.aGrid.placeAtIndex(104, gamePole);
+        gamePole.setDepth(10);
+
+        let textEndGame;
+        if (textGame == false) {
+            textEndGame = 'Проигрыш!';
+        } else {
+            textEndGame = 'Победа!';
+        }
+
+        let sizeEndGame = this.aGrid.ch * 1.5;
+        let showEndGame = this.add.text(0, 0, '' + textEndGame + '', {
+            fontSize: '' + sizeEndGame + 'px',
+            fontFamily: 'Aria',
+            align: 'center',
+        }).setOrigin(0.5);
+        this.aGrid.placeAtIndex(104, showEndGame);
+        showEndGame.setDepth(11);
+
+        this.input.on("pointerdown", function () {
+            // this.scene.stop().start('Preloader');
+            this.registry.destroy();
+            this.events.off();
+            this.scene.restart(this.score = 0, this.moves = 50);
+        }, this);
+    }
+
+    restartGame(){
+        this.input.on("pointerdown", function () {
+            // this.scene.stop().start('Preloader');
+            this.registry.destroy();
+            this.events.off();
+            this.scene.restart(this.score = 0, this.moves = 50);
+        }, this);
     }
 
 }

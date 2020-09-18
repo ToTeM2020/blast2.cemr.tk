@@ -1,6 +1,8 @@
+// import Phaser from 'phaser';
 // import {Preloader} from "./preload";
+// import endGame from './endGame';
 
-var game;
+let game;
 window.onload = function() {
     const config = {
         type: Phaser.AUTO,

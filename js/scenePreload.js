@@ -10,6 +10,8 @@ class Preloader extends Phaser.Scene {
     this.load.image('pause', '/assets/images/pause.png');
     this.load.image('button_little', '/assets/images/buttom-little.png');
     this.load.image('button', '/assets/images/buttom.png');
+    this.load.image('progressBox', '/assets/images/progressBox.png');
+    this.load.image('progressBar', '/assets/images/progressBar.png');
 
     this.load.image('block_red', '/assets/images/block-red.png');
     this.load.image('block_blue', '/assets/images/block-blue.png');
