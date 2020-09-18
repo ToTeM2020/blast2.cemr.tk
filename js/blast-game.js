@@ -1,7 +1,3 @@
-// import Phaser from 'phaser';
-// import {Preloader} from "./preload";
-// import endGame from './endGame';
-
 let game;
 window.onload = function() {
     const config = {
@@ -9,6 +5,10 @@ window.onload = function() {
         parent: 'phaser-game',
         width: 800,
         height: 600,
+        scale: {
+            // mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        },
         backgroundColor: '#eee',
         scene: [
             Preloader,

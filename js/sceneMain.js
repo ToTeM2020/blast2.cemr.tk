@@ -12,16 +12,14 @@ class SceneMain extends Phaser.Scene {
         let gameInformation, gameProgress, gamePause, gameButton_little, gameButton;
         let gameFieldRows = 8,
             gameFieldCols = 7;
-        let progressBar,
-            progressBox;
+        let progressBox;
 
         this.gameField = this.add.sprite(0, 0, 'field');
         gameInformation = this.add.sprite(0, 0, 'information');
         gameProgress = this.add.sprite(0, 0, 'progress');
-        this.gamePause = this.add.sprite(0, 0, 'pause');
+        // this.gamePause = this.add.sprite(0, 0, 'pause');
         // gameButton = this.add.sprite(0, 0, 'button');
         progressBox = this.add.sprite(0, 0, 'progressBox');
-        // progressBar = this.add.sprite(0, 0, 'progressBar');
 
         this.frames = ['block_red', 'block_blue', 'block_yellow', 'block_purple', 'block_green'];
 
@@ -41,9 +39,9 @@ class SceneMain extends Phaser.Scene {
         gameProgress.displayHeight = this.aGrid.ch * 2;
         this.aGrid.placeAtIndex(7, gameProgress);
 
-        this.gamePause.displayWidth = this.aGrid.cw + 25;
-        this.gamePause.displayHeight = this.aGrid.ch + 25;
-        this.aGrid.placeAtIndexCenteY(14, this.gamePause);
+        // this.gamePause.displayWidth = this.aGrid.cw + 25;
+        // this.gamePause.displayHeight = this.aGrid.ch + 25;
+        // this.aGrid.placeAtIndexCenteY(14, this.gamePause);
 
         // gameButton.displayWidth = this.aGrid.cw * 5;
         // gameButton.displayHeight = this.aGrid.ch * 1.5;
@@ -82,7 +80,6 @@ class SceneMain extends Phaser.Scene {
 
         this.progressBar3 = this.add.graphics();
         // console.log(this.gameField);
-
     }
 
     create() {
@@ -121,12 +118,6 @@ class SceneMain extends Phaser.Scene {
         console.log(this.blockField)
         this.lock = false;
         this.input.on("pointerdown", this.clickBlock, this);
-        this.gamePause.setInteractive();
-        // this.input.on("pointerdown", this.clickBlock, this);
-        // this.onObjectClicked(pointer,gameObject)
-        // {
-        //     console.log("Ok");
-        // }
     }
 
     update() {
@@ -186,51 +177,8 @@ class SceneMain extends Phaser.Scene {
                     this.searchBlock(row, col + 1, color);
                     this.searchBlock(row - 1, col, color);
                     this.searchBlock(row + 1, col, color);
-                    // this.newBlockField[row][col].name = nameBlock;
-                    // console.log("Совпала: ", row, col);
                 }
             }
-        }
-        // console.log("Кол-во ", count);
-    }
-
-    searchBlock2(row, col, color) {
-        // console.log("Передал: ", row, col, color);
-        let nameBlock = "sameBlock";
-        let nameBlock2 = "freeBlock";
-
-        if (this.blockField[row][col].name == nameBlock2) {
-            this.blockField[row][col].name = nameBlock;
-            if (col - 1 >= 0) {
-                if (this.blockField[row][col - 1].texture.key == color) {
-                    // this.blockField[row][col - 1].name = nameBlock;
-                    this.searchBlock2(row, col - 1, color);
-                    // console.log("Левый: ", row, col - 1);
-                    // console.log(this.blockField[row][col - 1].name);
-                }
-            }
-            if (col + 1 < this.fieldGrid.config.cols) {
-                if (this.blockField[row][col + 1].texture.key == color) {
-                    // this.blockField[row][col + 1].name = nameBlock;
-                    this.searchBlock2(row, col + 1, color);
-                    // console.log("Правый: ", row, col + 1);
-                }
-            }
-            if (row - 1 >= 0) {
-                if (this.blockField[row - 1][col].texture.key == color) {
-                    // this.blockField[row - 1][col].name = nameBlock;
-                    this.searchBlock2(row - 1, col, color);
-                    // console.log("Верхний: ", row - 1, col);
-                }
-            }
-            if (row + 1 < this.fieldGrid.config.rows) {
-                if (this.blockField[row + 1][col].texture.key == color) {
-                    // this.blockField[row + 1][col].name = nameBlock;
-                    this.searchBlock2(row + 1, col, color);
-                    // console.log("Нижний: ", row + 1, col);
-                }
-            }
-            console.log("Совпала: ", row, col);
         }
     }
 
@@ -300,52 +248,16 @@ class SceneMain extends Phaser.Scene {
     }
 
     fallBlocks(nameBlock, nameBlock2) {
-        let bool = false;
         this.lock = true;
         this.destroyed = 0;
-        this.newBlockField = this.blockField;
 
         let count = this.checkСountBlocks(nameBlock, 0);
         if (count == 0) {
             this.lock = false;
             this.countComboBlocks();
         }
-        // for (let j = 0; j < this.fieldGrid.config.cols; j++) {
-        //     let color = Phaser.Math.Between(0, 4);
-        //     if (this.blockField[0][j].name == nameBlock) {
-        //         // this.blockField[0][j].destroy();
-        //         this.blockField[0][j] = this.add.sprite(0, j, this.frames[color]).setInteractive();
-        //         this.blockField[0][j].displayWidth = this.fieldGrid.cw * 1;
-        //         this.blockField[0][j].displayHeight = this.fieldGrid.ch * 1.1;
-        //         this.fieldGrid.placeAt(j, 0, this.blockField[0][j]);
-        //         this.blockField[0][j].name = nameBlock2;
-        //         this.animationFallBlocks2(this.blockField[0][j]);
-        //     }
-        // }
-        // for (let i = 1; i < this.fieldGrid.config.rows; i++) {
-        //     for (let j = 0; j < this.fieldGrid.config.cols; j++) {
-        //         if (this.blockField[i][j].name == nameBlock) {
-        //             // this.bool2 = true;
-        //             destroyed++;
-        //             this.blockField[i][j] = this.add.sprite(0, j, this.blockField[i - 1][j].texture.key).setInteractive();
-        //             this.blockField[i][j].displayWidth = this.fieldGrid.cw * 1;
-        //             this.blockField[i][j].displayHeight = this.fieldGrid.ch * 1.1;
-        //             this.blockField[i - 1][j].name = nameBlock;
-        //             this.animationFallBlocks(this.blockField[i - 1][j], this.blockField[i][j], nameBlock, destroyed);
-        //             // this.blockField[i - 1][j].destroy();
-        //             this.fieldGrid.placeAt(j, i, this.blockField[i][j]);
-        //             this.blockField[i][j].name = nameBlock2;
-        //
-        //         }
-        //     }
-        // }
 
-
-
-        /*Учебный полигон вторая эпоха*/
-        // if (this.destroyed <= 0) {
         for (let i = this.fieldGrid.config.rows - 1; i >= 0; i--) {
-            // if (this.destroyed <= 0) {
             for (let j = 0; j < this.fieldGrid.config.cols; j++) {
                 if (this.blockField[i][j].name == nameBlock) {
                     this.destroyed++;
@@ -373,15 +285,6 @@ class SceneMain extends Phaser.Scene {
                 }
             }
         }
-        // }
-    }
-
-    returnAlpha() {
-        for (let i = 0; i < this.fieldGrid.config.rows; i++) {
-            for (let j = 0; j < this.fieldGrid.config.cols; j++) {
-                this.blockField[i][j].alpha = 1;
-            }
-        }
     }
 
     animationFallBlocks2(oldBlock, nextBlock) {
@@ -402,7 +305,6 @@ class SceneMain extends Phaser.Scene {
             targets: oldBlock,
             y: '+=' + this.fieldGrid.ch + '',
             duration: 150,
-            // delay: 10,
             callbackScope: this,
             onComplete: function () {
                 if (!nextBlock) {
@@ -420,7 +322,6 @@ class SceneMain extends Phaser.Scene {
                 }
             }
         });
-
     }
 
     animationDeleteBlocks(block) {
@@ -433,7 +334,6 @@ class SceneMain extends Phaser.Scene {
             duration: 200,
             completeDelay: 0,
             onComplete: function () {
-                // this.blockField = this.newBlockField;
             },
         });
     }
@@ -452,9 +352,34 @@ class SceneMain extends Phaser.Scene {
         });
     }
 
+    animationCountPoints(points) {
+        let sizeText = this.aGrid.ch / 2;
+        let textCountPoints = this.add.text(0, 0, '', {
+            fontSize: '' + sizeText + 'px',
+            fontFamily: 'Aria',
+            color: '#20539a',
+            align: 'center',
+        }).setOrigin(0.5);
+        this.aGrid.placeAtIndex(156, textCountPoints);
+
+        textCountPoints.setText('+ ' + points * points + '');
+
+        this.tweens.add({
+            targets: textCountPoints,
+            alpha: {
+                getStart: () => 1,
+                getEnd: () => 0
+            },
+            y: '-=' + this.fieldGrid.ch * 1.5 + '',
+            duration: 1100,
+            callbackScope: this
+        });
+    }
+
     countPoints(points) {
         this.score += points * points;
         this.gamePoints.setText(this.score);
+        this.animationCountPoints(points);
     }
 
     countMoves() {
@@ -508,16 +433,10 @@ class SceneMain extends Phaser.Scene {
         }).setOrigin(0.5);
         this.aGrid.placeAtIndex(104, showEndGame);
         showEndGame.setDepth(11);
-
-        this.input.on("pointerdown", function () {
-            // this.scene.stop().start('Preloader');
-            this.registry.destroy();
-            this.events.off();
-            this.scene.restart(this.score = 0, this.moves = 50);
-        }, this);
+        this.restartGame();
     }
 
-    restartGame(){
+    restartGame() {
         this.input.on("pointerdown", function () {
             // this.scene.stop().start('Preloader');
             this.registry.destroy();
